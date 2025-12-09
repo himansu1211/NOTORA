@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notora - Note Editor</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <img src="logo.jpg" alt="Notora Logo" class="logo">
+        <div>
+            <a href="index.html">Notes</a>
+            <a href="calendar.html">Calendar</a>
+            <a href="checklist.html">Checklists</a>
+            <button id="theme-toggle" class="theme-toggle">🌙</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="note-editor">
+            <input type="text" id="note-title" placeholder="Note Title">
+
+            <!-- Rich Text Editor Toolbar -->
+            <div class="editor-toolbar">
+                <button onclick="formatText('bold')" title="Bold"><b>B</b></button>
+                <button onclick="formatText('italic')" title="Italic"><i>I</i></button>
+                <button onclick="formatText('underline')" title="Underline"><u>U</u></button>
+                <button onclick="formatText('insertUnorderedList')" title="Bullet List">•</button>
+                <button onclick="formatText('insertOrderedList')" title="Numbered List">1.</button>
+                <select onchange="formatText('fontSize', this.value)">
+                    <option value="">Size</option>
+                    <option value="1">Small</option>
+                    <option value="3">Normal</option>
+                    <option value="5">Large</option>
+                    <option value="7">Extra Large</option>
+                </select>
+                <select onchange="formatText('backColor', this.value)">
+                    <option value="">Text Background</option>
+                    <option value="yellow">Yellow</option>
+                    <option value="lightblue">Light Blue</option>
+                    <option value="lightgreen">Light Green</option>
+                    <option value="pink">Pink</option>
+                    <option value="lightgray">Light Gray</option>
+                </select>
+                <select onchange="formatText('foreColor', this.value)">
+                    <option value="">Text Color</option>
+                    <option value="black">Black</option>
+                    <option value="red">Red</option>
+                    <option value="blue">Blue</option>
+                    <option value="green">Green</option>
+                    <option value="purple">Purple</option>
+                    <option value="orange">Orange</option>
+                    <option value="gray">Gray</option>
+                </select>
+                <button onclick="formatText('justifyLeft')" title="Align Left">⬅</button>
+                <button onclick="formatText('justifyCenter')" title="Align Center">⬌</button>
+                <button onclick="formatText('justifyRight')" title="Align Right">➡</button>
+                <input type="file" id="image-input" accept="image/*" style="display: none;">
+                <button onclick="document.getElementById('image-input').click()" title="Insert Image">📷</button>
+            </div>
+
+            <div id="note-body" contenteditable="true" class="rich-editor" placeholder="Start writing your note..."></div>
+
+            <div class="color-picker">
+                <label>Note Background Color:</label>
+                <div class="color-option selected" data-color="#ffffff" style="background-color: #ffffff;"></div>
+                <div class="color-option" data-color="#ffeb3b" style="background-color: #ffeb3b;"></div>
+                <div class="color-option" data-color="#4caf50" style="background-color: #4caf50;"></div>
+                <div class="color-option" data-color="#2196f3" style="background-color: #2196f3;"></div>
+                <div class="color-option" data-color="#f44336" style="background-color: #f44336;"></div>
+                <div class="color-option" data-color="#9c27b0" style="background-color: #9c27b0;"></div>
+                <div class="color-option" data-color="#ff9800" style="background-color: #ff9800;"></div>
+                <div class="color-option" data-color="#607d8b" style="background-color: #607d8b;"></div>
+            </div>
+
+            <div class="note-actions">
+                <button class="save-btn" onclick="saveNote()">Save Note</button>
+                <div class="share-buttons">
+                    <button class="share-text-btn" onclick="shareCurrentNoteAsText()" title="Share as Text">📄 Share Text</button>
+                    <button class="share-image-btn" onclick="shareCurrentNoteAsImage()" title="Share as Image">🖼️ Share Image</button>
+                </div>
+                <button class="delete-btn" onclick="deleteCurrentNote()" id="delete-note-btn" style="display: none;">🗑️ Delete Note</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            initNoteEditorPage();
+
+            // Theme toggle functionality
+            const themeToggle = document.getElementById('theme-toggle');
+            themeToggle.addEventListener('click', function() {
+                document.body.classList.toggle('dark-theme');
+                const isDark = document.body.classList.contains('dark-theme');
+                themeToggle.textContent = isDark ? '☀️' : '🌙';
+                localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            });
+
+            // Load saved theme
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-theme');
+                themeToggle.textContent = '☀️';
+            }
+
+            // Color picker functionality
+            document.querySelectorAll('.color-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    // Remove selected class from all options
+                    document.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('selected'));
+                    // Add selected class to clicked option
+                    this.classList.add('selected');
+                    // Apply the color to the note body
+                    const noteBody = document.getElementById('note-body');
+                    noteBody.style.backgroundColor = this.dataset.color;
+                    console.log('Selected color:', this.dataset.color);
+                });
+            });
+
+            // Image insertion functionality
+            document.getElementById('image-input').addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        img.style.maxWidth = '100%';
+                        img.style.height = 'auto';
+                        document.getElementById('note-body').appendChild(img);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

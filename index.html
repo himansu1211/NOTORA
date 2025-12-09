@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notora - Notes App</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <img src="logo.jpg" alt="Notora Logo" class="logo">
+        <div class="nav-links">
+            <a href="index.html">Notes</a>
+            <a href="calendar.html">Calendar</a>
+            <a href="checklist.html">Checklists</a>
+        </div>
+        <div class="nav-right">
+            <div id="clock" class="clock">00:00:00</div>
+            <button id="theme-toggle" class="theme-toggle">🌙</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="search-container">
+            <input type="text" id="search-input" placeholder="Search notes...">
+            <button class="filter-btn" id="filter-pinned">Pinned</button>
+            <button class="filter-btn" id="filter-today">Today</button>
+            <button class="filter-btn" id="filter-checklist">Checklists</button>
+        </div>
+
+        <div class="notes-grid" id="notes-grid">
+            <!-- Notes will be rendered here -->
+        </div>
+    </div>
+
+    <button class="add-note-btn" id="add-note-btn">+</button>
+
+    <script src="script.js"></script>
+    <script>
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', function() {
+            renderNotes();
+            setupEventListeners();
+            initClock();
+        });
+
+        function setupEventListeners() {
+            document.getElementById('add-note-btn').addEventListener('click', function() {
+                window.location.href = 'note-editor.html';
+            });
+
+            document.getElementById('search-input').addEventListener('input', function() {
+                renderNotes();
+            });
+
+            document.getElementById('filter-pinned').addEventListener('click', function() {
+                this.classList.toggle('active');
+                renderNotes();
+            });
+
+            document.getElementById('filter-today').addEventListener('click', function() {
+                this.classList.toggle('active');
+                renderNotes();
+            });
+
+            document.getElementById('filter-checklist').addEventListener('click', function() {
+                this.classList.toggle('active');
+                renderNotes();
+            });
+
+            // Theme toggle functionality
+            const themeToggle = document.getElementById('theme-toggle');
+            themeToggle.addEventListener('click', function() {
+                document.body.classList.toggle('dark-theme');
+                const isDark = document.body.classList.contains('dark-theme');
+                themeToggle.textContent = isDark ? '☀️' : '🌙';
+                localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            });
+
+            // Load saved theme
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-theme');
+                themeToggle.textContent = '☀️';
+            }
+        }
+
+        function initClock() {
+            function updateClock() {
+                const now = new Date();
+                const hours = String(now.getHours()).padStart(2, '0');
+                const minutes = String(now.getMinutes()).padStart(2, '0');
+                const seconds = String(now.getSeconds()).padStart(2, '0');
+                const timeString = `${hours}:${minutes}:${seconds}`;
+                document.getElementById('clock').textContent = timeString;
+            }
+
+            // Update clock immediately
+            updateClock();
+
+            // Update clock every second
+            setInterval(updateClock, 1000);
+        }
+    </script>
+</body>
+</html>
