@@ -1,107 +1,45 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Notora - Notes App</title>
-    <link rel="stylesheet" href="styles.css">
-    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Notora</title>
+  <link rel="stylesheet" href="style.css">
+  <h2>Notora-Notes Organizer</h2>
 </head>
 <body>
-    <nav class="navbar">
-        <img src="logo.jpg" alt="Notora Logo" class="logo">
-        <div class="nav-links">
-            <a href="index.html">Notes</a>
-            <a href="calendar.html">Calendar</a>
-            <a href="checklist.html">Checklists</a>
-        </div>
-        <div class="nav-right">
-            <div id="clock" class="clock">00:00:00</div>
-            <button id="theme-toggle" class="theme-toggle">🌙</button>
-        </div>
-    </nav>
 
-    <div class="container">
-        <div class="search-container">
-            <input type="text" id="search-input" placeholder="Search notes...">
-            <button class="filter-btn" id="filter-pinned">Pinned</button>
-            <button class="filter-btn" id="filter-today">Today</button>
-            <button class="filter-btn" id="filter-checklist">Checklists</button>
-        </div>
+<div class="app">
+  <aside class="sidebar">
+    <h2>Your Notes</h2>
+    <button id="newNoteBtn">+ New Note</button>
+    <ul id="notesList"></ul>
+  </aside>
 
-        <div class="notes-grid" id="notes-grid">
-            <!-- Notes will be rendered here -->
-        </div>
+  <main class="editor" id="noteArea">
+    <input id="noteTitle" placeholder="Note title..." />
+    <textarea id="noteContent" placeholder="Start writing..."></textarea>
+
+    <div class="toolbar">
+      <button id="exportText">Export as Text</button>
+      <button id="exportImage">Share as Image</button>
     </div>
 
-    <button class="add-note-btn" id="add-note-btn">+</button>
+    <div class="attachments">
+      <input type="file" id="fileInput" multiple />
+      <div id="filesList"></div>
+    </div>
 
-    <script src="script.js"></script>
-    <script>
-        // Initialize the app
-        document.addEventListener('DOMContentLoaded', function() {
-            renderNotes();
-            setupEventListeners();
-            initClock();
-        });
+    <div id="linkPreview"></div>
+  </main>
+</div>
 
-        function setupEventListeners() {
-            document.getElementById('add-note-btn').addEventListener('click', function() {
-                window.location.href = 'note-editor.html';
-            });
+<div id="imageModal" onclick="this.style.display='none'">
+  <img id="modalImg">
+</div>
 
-            document.getElementById('search-input').addEventListener('input', function() {
-                renderNotes();
-            });
-
-            document.getElementById('filter-pinned').addEventListener('click', function() {
-                this.classList.toggle('active');
-                renderNotes();
-            });
-
-            document.getElementById('filter-today').addEventListener('click', function() {
-                this.classList.toggle('active');
-                renderNotes();
-            });
-
-            document.getElementById('filter-checklist').addEventListener('click', function() {
-                this.classList.toggle('active');
-                renderNotes();
-            });
-
-            // Theme toggle functionality
-            const themeToggle = document.getElementById('theme-toggle');
-            themeToggle.addEventListener('click', function() {
-                document.body.classList.toggle('dark-theme');
-                const isDark = document.body.classList.contains('dark-theme');
-                themeToggle.textContent = isDark ? '☀️' : '🌙';
-                localStorage.setItem('theme', isDark ? 'dark' : 'light');
-            });
-
-            // Load saved theme
-            const savedTheme = localStorage.getItem('theme');
-            if (savedTheme === 'dark') {
-                document.body.classList.add('dark-theme');
-                themeToggle.textContent = '☀️';
-            }
-        }
-
-        function initClock() {
-            function updateClock() {
-                const now = new Date();
-                const hours = String(now.getHours()).padStart(2, '0');
-                const minutes = String(now.getMinutes()).padStart(2, '0');
-                const seconds = String(now.getSeconds()).padStart(2, '0');
-                const timeString = `${hours}:${minutes}:${seconds}`;
-                document.getElementById('clock').textContent = timeString;
-            }
-
-            // Update clock immediately
-            updateClock();
-
-            // Update clock every second
-            setInterval(updateClock, 1000);
-        }
-    </script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="db.js"></script>
+<script src="app.js"></script>
 </body>
 </html>
